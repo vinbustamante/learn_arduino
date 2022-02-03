@@ -8,9 +8,7 @@
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 4 // Reset pin # (or -1 if sharing Arduino reset pin)
 
-// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
-//UUID's of the service, characteristic that we want to read and characteristic that we want to write.
 static BLEUUID serviceId("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 static BLEUUID charactericId("beb5483e-36e1-4688-b7f5-ea07361b26a8");
 
@@ -29,8 +27,6 @@ long lastReading = 0;
 
 bool connectToServer(BLEAddress pAddress) {
    BLEClient* pClient = BLEDevice::createClient();
-   Serial.println("attemp to connect server");
-   // Connect to the remove BLE Server. 
    pClient->connect(pAddress);
    Serial.println(" - Connected to server");
    // Obtain a reference to the service we are after in the remote BLE server.
@@ -71,9 +67,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
 //When the BLE Server sends a new temperature reading with the notify property
 static void counterCharacteristicCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
-    Serial.println("data arrive from ble");
     counterValue = (int*)pData;
-    newValue = true;  
+    newValue = true;
 }
 
 void setup()
