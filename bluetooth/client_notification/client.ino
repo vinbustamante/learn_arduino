@@ -19,10 +19,17 @@ static BLEAddress *pServerAddress;
 
 static BLERemoteCharacteristic* counterCharacteristic;
 bool newValue = false;
-char* counterValue;
+int* counterValue;
+bool foundService = false;
+bool isConnected = false;
+const uint8_t notificationOn[] = {0x1, 0x0};
+const uint8_t notificationOff[] = {0x0, 0x0};
+int testCounter = 1;
+long lastReading = 0;
 
 bool connectToServer(BLEAddress pAddress) {
    BLEClient* pClient = BLEDevice::createClient();
+   Serial.println("attemp to connect server");
    // Connect to the remove BLE Server. 
    pClient->connect(pAddress);
    Serial.println(" - Connected to server");
@@ -40,19 +47,23 @@ bool connectToServer(BLEAddress pAddress) {
         return false;
     }
     counterCharacteristic->registerForNotify(counterCharacteristicCallback);
+     Serial.println(" Notification attach");
+     isConnected = true;
 }
 
 //Callback function that gets called, when another advertisement has been received
-class MyAdvertisedDeviceCallbacks: BLEAdvertisedDeviceCallbacks {
+class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
     void onResult(BLEAdvertisedDevice advertisedDevice) {
         //Check if the name of the advertiser matches
+        Serial.println(advertisedDevice.getName().c_str());
         if (advertisedDevice.getName() == bleServerName) {
             //Scan can be stopped, we found what we are looking for
             advertisedDevice.getScan()->stop();
 
             //Address of advertiser is the one we need
             pServerAddress = new BLEAddress(advertisedDevice.getAddress());
-            Serial.println("Device found. Connecting!");
+            foundService = true;
+            Serial.println("Device found.");
         }
     }
 };
@@ -60,39 +71,57 @@ class MyAdvertisedDeviceCallbacks: BLEAdvertisedDeviceCallbacks {
 
 //When the BLE Server sends a new temperature reading with the notify property
 static void counterCharacteristicCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
-    counterValue = (char*)pData;
-    newValue = true;
-}
-
-void displayValue() {
-    display.clearDisplay();
-    display.setTextSize(2);
-    display.setCursor(0,0);
-    display.print("Counter: ");
-    display.setCursor(0, 20);
-    display.print(counterValue);
-    Serial.print("Counter: ");
-    Serial.println(counterValue);
+    Serial.println("data arrive from ble");
+    counterValue = (int*)pData;
+    newValue = true;  
 }
 
 void setup()
 {
+    Serial.begin(115200);
 	if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
         Serial.println(F("SSD1306 allocation failed"));
         for(;;); // Don't proceed, loop forever
     }
     display.clearDisplay();
     display.setTextSize(1);
-    // display.setTextColor(WHITE,0);
+    display.setTextColor(WHITE, 0);
     display.setCursor(0,0);
     display.print("INITIALISATION");
     display.display();
-    //Start serial communication
-    Serial.begin(115200);
-    Serial.println("Starting Arduino BLE Client application...");
-}
+    
+    Serial.println("Starting Arduino BLE CLIENT...");
+    BLEDevice::init("");
+    BLEScan* pBLEScan = BLEDevice::getScan();
+    pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+    pBLEScan->setActiveScan(true);
+    pBLEScan->start(30);     
+};
 
 void loop()
 {
-	
+	if (foundService && isConnected == false) {       
+        connectToServer(*pServerAddress);
+        Serial.println("BLE CLIENT CONNECTED");
+        isConnected = true;
+        // counterCharacteristic->getDescriptor(BLEUUID((uint16_t)0x2902))->writeValue((uint8_t*)notificationOn, 2, true);
+    }
+    if (isConnected) {                
+        long current = millis();
+        if ( current - lastReading >= 1000) {
+            lastReading = current;
+            displayValue();         
+        }        
+    }
 }
+
+void displayValue() {         
+    if (newValue) {        
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setCursor(0,0);
+        display.print(*counterValue);
+        display.display();
+        newValue = false;
+    }
+};

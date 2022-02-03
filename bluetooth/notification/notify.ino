@@ -92,12 +92,16 @@ void loop() {
     // notify changed value
     if (deviceConnected) {
         pCharacteristic->setValue((uint8_t*)&value, 4);
+        // char data[16];
+        // itoa(value, data, 10);
+        // Serial.println(data);
+        // pCharacteristic->setValue(data);
         // String message = String(value);
         // pCharacteristic->setValue(message);
         pCharacteristic->notify();
         value++;
         delay(1000); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-         Serial.println(value);
+        //  Serial.println(value);
     }
     // disconnecting
     if (!deviceConnected && oldDeviceConnected) {
