@@ -14,18 +14,18 @@ long lastMsg = 0;
 char msg[50];
 int value = 0;
 bool is_wifi_connected = false;
-bool is_mqtt_connected = false;
 
 void setup()
 {
-	Serial.begin(115200);    
+	  Serial.begin(115200);    
     pinMode(ledPin, OUTPUT);
     setup_wifi();
 }
 
 void loop()
-{
-    if (is_wifi_connected && is_mqtt_connected == false) {
+{    
+    if (is_wifi_connected) {
+      if (client.connected() == false) {
         client.setClient(espClient);
         client.setServer("192.168.1.33",1883);
         client.setCallback(on_message_arrive);
@@ -34,16 +34,17 @@ void loop()
             Serial.println("attempting to connect....");
             delay(500);
         }
-        is_mqtt_connected = true;
         client.subscribe(TOPIC);
         Serial.println("sucessfully conncted");
+      } else {
+        client.loop();
+      }      
     }
-    client.loop();
 }
 
 void setup_wifi() {
-   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
    WiFi.onEvent(WiFiEvent);
+   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 
@@ -53,40 +54,28 @@ void WiFiEvent(WiFiEvent_t event) {
         case SYSTEM_EVENT_STA_GOT_IP:
             is_wifi_connected = true;
             Serial.println("WiFi connected");
+            Serial.println(WiFi.macAddress());
             Serial.println("IP address: ");
             Serial.println(WiFi.localIP());
             break;
         case SYSTEM_EVENT_STA_DISCONNECTED:
             is_wifi_connected = false;
-            Serial.println("WiFi lost connection"); 
+            Serial.println("WiFi lost connection");
+            WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
             break;
     }
 }
 
 void on_message_arrive(char* topic, byte* message, unsigned int length) {
-  Serial.print("Message arrived on topic: ");
-  Serial.print(topic);  
-  String messageTemp;
-  
+  String messageTemp;  
   for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
     messageTemp += (char)message[i];
   }
-  Serial.println();
-  Serial.println(". Message: " + messageTemp);
-
-  // Feel free to add more if statements to control more GPIOs with MQTT
-
-  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
-  // Changes the output state according to the message
   if (String(topic) == "esp32/output") {
-    Serial.print("Changing output to ");
     if(messageTemp == "on"){
-      Serial.println("on");
       digitalWrite(ledPin, HIGH);
     }
     else if(messageTemp == "off"){
-      Serial.println("off");
       digitalWrite(ledPin, LOW);
     }
   }
