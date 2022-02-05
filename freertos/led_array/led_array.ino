@@ -55,7 +55,7 @@ void setup()
             &led, // TASK PARAMETER
             TASK_PRIORITY,
             &led.taskh, // task handle
-            app_cpu // cpu core id
+            app_cpu 
         );
         Serial.printf("%d ",led.pin);
     }
