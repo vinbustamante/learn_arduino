@@ -4,11 +4,11 @@
 #define GPIO_LED3     16
 
 // Button GPIOs:
-#define GPIO_BUT1     13
-#define GPIO_BUT2     12
-#define GPIO_BUT3     14
+#define GPIO_BUTTON1     13
+#define GPIO_BUTTON2     12
+#define GPIO_BUTTON3     14
 
-#define Threshold 20
+#define Threshold     20
 #define N_BUTTONS     3
 #define Q_DEPTH       8
 
@@ -26,9 +26,9 @@ static struct s_button {
     QueueHandle_t qh;
     isr_t   isr; // ISR ROUTINE
 } buttons[N_BUTTONS] = {
-    { GPIO_BUT1, GPIO_LED1, nullptr, isr_gpio1 },
-    { GPIO_BUT2, GPIO_LED2, nullptr, isr_gpio2 },
-    { GPIO_BUT3, GPIO_LED3, nullptr, isr_gpio3 }
+    { GPIO_BUTTON1, GPIO_LED1, nullptr, isr_gpio1 },
+    { GPIO_BUTTON2, GPIO_LED2, nullptr, isr_gpio2 },
+    { GPIO_BUTTON3, GPIO_LED3, nullptr, isr_gpio3 }
 };
 
 static void evtask(void *arg) {
