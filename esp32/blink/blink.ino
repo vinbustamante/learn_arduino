@@ -25,17 +25,17 @@ void loop()
     //         Serial.println("button is press");
     //     }        
     // }
-    touchValue = touchRead(BUTTON);
-    if (touchValue < THRESHOLD) {
-        digitalWrite(LED, HIGH);
-        Serial.println("LED IS ON");
-    } else {
-        digitalWrite(LED, LOW);
-        Serial.println("LED IS OFF");
-    }
-    delay(100);
-    /*digitalWrite(LED, HIGH);
-    delay(5000);
+    // touchValue = touchRead(BUTTON);
+    // if (touchValue < THRESHOLD) {
+    //     digitalWrite(LED, HIGH);
+    //     Serial.println("LED IS ON");
+    // } else {
+    //     digitalWrite(LED, LOW);
+    //     Serial.println("LED IS OFF");
+    // }
+    // delay(100);
+    digitalWrite(LED, HIGH);
+    delay(1000);
     digitalWrite(LED, LOW);
-    delay(5000);*/
+    delay(1000);
 }
