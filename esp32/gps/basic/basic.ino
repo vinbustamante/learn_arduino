@@ -77,9 +77,6 @@ void loop()
     bool gpsWasFixed = fix.valid.status && (fix.status >= gps_fix::STATUS_STD);
     digitalWrite(fixLEDPin, gpsWasFixed);
 
-    // DEBUG_PORT.println(fix.status);
-    // Serial.print(fix);
-
     // When we have a valid location, print the latitude and longitude to the USB Serial terminal
     if (fix.valid.location)
     {
