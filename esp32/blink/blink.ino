@@ -35,7 +35,7 @@ void loop()
     // }
     // delay(100);
     digitalWrite(LED, HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED, LOW);
-    delay(1000);
+    delay(500);
 }
