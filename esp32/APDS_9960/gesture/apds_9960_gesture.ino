@@ -20,28 +20,49 @@
  ***************************************************************************/
 
 #include "Adafruit_APDS9960.h"
+#define LED 2
+#define INT_PIN 18
 Adafruit_APDS9960 apds;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   Serial.begin(115200);
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, LOW);
   
   if(!apds.begin()){
     Serial.println("failed to initialize device! Please check your wiring.");
   }
-  else Serial.println("Device initialized!");
+  else {    
+    Serial.println("Device initialized!");
+    digitalWrite(LED, HIGH);
+  }
 
   //gesture mode will be entered once proximity mode senses something close
   apds.enableProximity(true);
   apds.enableGesture(true);
+  apds.setGestureProximityThreshold(1);
+  apds.setGestureFIFOThreshold(APDS9960_GFIFO_16);
+  apds.setGestureGain(APDS9960_GGAIN_4);
+  apds.resetCounts();
 }
 
 // the loop function runs over and over again forever
 void loop() {
-  //read a gesture from the device
-    uint8_t gesture = apds.readGesture();
-    if(gesture == APDS9960_DOWN) Serial.println("down");
-    if(gesture == APDS9960_UP) Serial.println("up");
-    if(gesture == APDS9960_LEFT) Serial.println("left");
-    if(gesture == APDS9960_RIGHT) Serial.println("right");
+    if (apds.gestureValid()) {
+      // apds.clearInterrupt();
+      // Serial.println("gesture found");
+      uint8_t gesture = apds.readGesture();
+      if(gesture == APDS9960_DOWN){
+        Serial.println("down");
+      } else if(gesture == APDS9960_UP) {
+        Serial.println("up");
+      } else if(gesture == APDS9960_LEFT) {
+        Serial.println("left");      
+      } else if(gesture == APDS9960_RIGHT) {
+        Serial.println("right");
+      } else {
+        //
+      }
+    }
 }
