@@ -1,6 +1,6 @@
 {
     "port": "/dev/tty.usbserial-0001",
-    "configuration": "FlashFreq=80,UploadSpeed=921600,DebugLevel=none",
-    "board": "esp32:esp32:esp32doit-devkit-v1",
-    "sketch": "esp32/APDS_9960/gesture/apds_9960_gesture.ino"
+    "board": "espressif:esp32:esp32wrover",
+    "sketch": "esp32/tube_segment_display/segment_display_custom_shape/segment_display_custom_shape.ino",
+    "configuration": "PartitionScheme=default,FlashMode=qio,FlashFreq=80,UploadSpeed=921600,DebugLevel=none"
 }

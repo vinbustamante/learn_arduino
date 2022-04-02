@@ -7,7 +7,7 @@ const int THRESHOLD = 20;
 
 void setup()
 {
-	Serial.begin(115200);
+    Serial.begin(115200);
     pinMode(LED, OUTPUT);
     pinMode(BUTTON, INPUT);
 }
@@ -23,7 +23,7 @@ void loop()
     //         Serial.println("button is off");
     //     } else {
     //         Serial.println("button is press");
-    //     }        
+    //     }
     // }
     // touchValue = touchRead(BUTTON);
     // if (touchValue < THRESHOLD) {
